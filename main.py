@@ -51,7 +51,7 @@ reddit = praw.Reddit(client_id='BadL5FdbIk7neA',
                     user_agent='practiceagent')
 
 subreddit = reddit.subreddit('hardwareswap')
-
+search_query = search_query.lower()
 
 for submission in subreddit.stream.submissions():
     try:
@@ -59,7 +59,7 @@ for submission in subreddit.stream.submissions():
         title = find_between_r(submission.title, start_string, end_string)
 
         #Get the body
-        body = submission.selftext
+        body = submission.selftext.lower()
         #Search the body
         search_list = find_matches(submission.selftext, search_query)
         for search_item in search_list:
