@@ -3,10 +3,13 @@ import praw
 
 
 #INPUTS
-search_query = 'lo&lo'
-#search_query = 'gtx, a'
+search_query = 'gtx&1060,gtx&1070,gtx&1080'
+#search_query = 'gtx&1080'
+#search_query = 'gtx'
 #search_query = 'gtx,1080'
 price_max = 500
+#WHY A PRICE MIN? -> Because we would be including more invalid results otherwise
+price_min = 0
 
 
 # Find between [W] and [H]
@@ -78,9 +81,9 @@ start_string = '[H]'
 end_string = '[W]'
 
 #MAIN
-reddit = praw.Reddit(client_id='BadL5FdbIk7neA',
-                    client_secret='m7vInPM4UTDWu0_9uza7nueT6jA',
-                    user_agent='practiceagent')
+reddit = praw.Reddit(client_id='',
+                    client_secret='',
+                    user_agent='')
 
 subreddit = reddit.subreddit('hardwareswap')
 search_query = search_query.lower()
@@ -98,10 +101,9 @@ for submission in subreddit.stream.submissions():
             value_text = find_between_r(search_item, "$", " ")
             if value_text != "":
                 value = get_value(value_text)
-                if int(value) < price_max :
-                    #print('Found! ' + search_item + " - $" + value)
-                    print(submission.url)
-
+                if int(value) < price_max:
+                    if int(value) > price_min:
+                        print('Found! ' + search_item + " - $" + value + " - " + submission.url)
     except Exception as e:
         pass
 
