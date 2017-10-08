@@ -83,7 +83,7 @@ end_string = '[W]'
 #MAIN
 reddit = praw.Reddit(client_id='',
                     client_secret='',
-                    user_agent='')
+                    user_agent='practiceagent')
 
 subreddit = reddit.subreddit('hardwareswap')
 search_query = search_query.lower()
