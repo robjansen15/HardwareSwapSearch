@@ -3,11 +3,14 @@ import praw
 
 
 #INPUTS
-search_query = 'Dell'
+search_query = 'lo&lo'
+#search_query = 'gtx, a'
+#search_query = 'gtx,1080'
 price_max = 500
 
 
 # Find between [W] and [H]
+# Find between $ and *space*
 def find_between_r(str, first, last ):
     try:
         start = str.rindex( first ) + len( first )
@@ -18,17 +21,46 @@ def find_between_r(str, first, last ):
 
 
 # Parse the body for the search criteria
+# Going to simplify once I get all of the paths
 def find_matches(str, search):
     search_criteria = []
-    try:
-        for split in str.splitlines():
-            if(split.find(search) == -1):
-                continue
-            else:
-                search_criteria.append(split)
-        return search_criteria
-    except ValueError:
-        return ""
+    if search.find(',') != -1:
+        for search_str in search.split(','):
+            search_criteria.extend(get_matches(str, search_str))
+    else:
+        search_criteria.extend(get_matches(str, search))
+
+    return search_criteria
+
+
+# Get matches
+def get_matches(str, search_str):
+    if search_str.find('&') != -1:
+        all_conditions = True
+        for condition in search_str.split('&'):
+            try:
+                if not get_matches_base(str, condition):
+                    all_conditions = False
+            except:
+                pass
+        if all_conditions:
+            return get_matches_base(str, search_str.split('&')[0])
+        else:
+            return []
+    else:
+        return get_matches_base(str,search_str);
+
+
+# Get matches base
+def get_matches_base(str, search_str):
+    temp_search_list = []
+    for split in str.splitlines():
+        try:
+            if split.find(search_str) != -1:
+                temp_search_list.append(split)
+        except:
+            pass
+    return temp_search_list
 
 
 # Get number from a string
@@ -64,10 +96,10 @@ for submission in subreddit.stream.submissions():
         search_list = find_matches(submission.selftext, search_query)
         for search_item in search_list:
             value_text = find_between_r(search_item, "$", " ")
-            if(value_text != ""):
+            if value_text != "":
                 value = get_value(value_text)
                 if int(value) < price_max :
-                    print('Found! ' + search_query + " - $" + value)
+                    #print('Found! ' + search_item + " - $" + value)
                     print(submission.url)
 
     except Exception as e:
